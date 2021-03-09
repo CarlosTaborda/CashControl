@@ -1,5 +1,5 @@
 import 'package:moor/moor.dart';
-part 'database.g.dart'
+part 'database.g.dart';
 
 @DataClassName("Category")
 class Categories extends Table{
@@ -7,8 +7,8 @@ class Categories extends Table{
   IntColumn get id=> integer().autoIncrement()();
   TextColumn get name => text().withLength(min: 0, max:50)();
   TextColumn get color => text().withLength(min: 0, max:15)();
-  BooleanColumn get active => boolean().withDefault(const Constant(true))();
-  IntColumn get type => integer().();
+  BoolColumn get active => boolean().withDefault(const Constant(true))();
+  IntColumn get type => integer()();
 
 }
 
@@ -17,14 +17,14 @@ class Movement extends Table{
 
   IntColumn get id => integer().autoIncrement()();
   TextColumn get description => text().withLength(min: 0, max:50)();
-  IntColumn get category_id  => integer().();
-  DoubleColumn get value => real().();
-  DateTimeColumn get date_movement => dateTime().();
-  BooleanColumn get active => boolean().withDefault(const Constant(true))();
+  IntColumn get categoryId  => integer()();
+  RealColumn get value => real().withDefault(const Constant(0))();
+  DateTimeColumn get dateMovement => dateTime().withDefault( Constant(DateTime.now()))();
+  BoolColumn get active => boolean().withDefault(const Constant(true))();
 
 }
 
-@UseMoor(tables:["Categories","Movements"])
+@UseMoor(tables:[Categories,Movement])
 class MyDatabase{
  
 }
