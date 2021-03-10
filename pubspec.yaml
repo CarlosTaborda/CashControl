@@ -25,6 +25,7 @@ dependencies:
     sdk: flutter
   get:
   moor: 
+  moor_flutter: 
   sqlite3_flutter_libs: 
   path_provider:
   path:

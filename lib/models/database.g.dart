@@ -383,8 +383,8 @@ class Movement extends DataClass implements Insertable<Movement> {
     return map;
   }
 
-  MovementCompanion toCompanion(bool nullToAbsent) {
-    return MovementCompanion(
+  MovementsCompanion toCompanion(bool nullToAbsent) {
+    return MovementsCompanion(
       id: id == null && nullToAbsent ? const Value.absent() : Value(id),
       description: description == null && nullToAbsent
           ? const Value.absent()
@@ -476,14 +476,14 @@ class Movement extends DataClass implements Insertable<Movement> {
           other.active == this.active);
 }
 
-class MovementCompanion extends UpdateCompanion<Movement> {
+class MovementsCompanion extends UpdateCompanion<Movement> {
   final Value<int> id;
   final Value<String> description;
   final Value<int> categoryId;
   final Value<double> value;
   final Value<DateTime> dateMovement;
   final Value<bool> active;
-  const MovementCompanion({
+  const MovementsCompanion({
     this.id = const Value.absent(),
     this.description = const Value.absent(),
     this.categoryId = const Value.absent(),
@@ -491,7 +491,7 @@ class MovementCompanion extends UpdateCompanion<Movement> {
     this.dateMovement = const Value.absent(),
     this.active = const Value.absent(),
   });
-  MovementCompanion.insert({
+  MovementsCompanion.insert({
     this.id = const Value.absent(),
     @required String description,
     @required int categoryId,
@@ -518,14 +518,14 @@ class MovementCompanion extends UpdateCompanion<Movement> {
     });
   }
 
-  MovementCompanion copyWith(
+  MovementsCompanion copyWith(
       {Value<int> id,
       Value<String> description,
       Value<int> categoryId,
       Value<double> value,
       Value<DateTime> dateMovement,
       Value<bool> active}) {
-    return MovementCompanion(
+    return MovementsCompanion(
       id: id ?? this.id,
       description: description ?? this.description,
       categoryId: categoryId ?? this.categoryId,
@@ -561,7 +561,7 @@ class MovementCompanion extends UpdateCompanion<Movement> {
 
   @override
   String toString() {
-    return (StringBuffer('MovementCompanion(')
+    return (StringBuffer('MovementsCompanion(')
           ..write('id: $id, ')
           ..write('description: $description, ')
           ..write('categoryId: $categoryId, ')
@@ -573,10 +573,11 @@ class MovementCompanion extends UpdateCompanion<Movement> {
   }
 }
 
-class $MovementTable extends Movement with TableInfo<$MovementTable, Movement> {
+class $MovementsTable extends Movements
+    with TableInfo<$MovementsTable, Movement> {
   final GeneratedDatabase _db;
   final String _alias;
-  $MovementTable(this._db, [this._alias]);
+  $MovementsTable(this._db, [this._alias]);
   final VerificationMeta _idMeta = const VerificationMeta('id');
   GeneratedIntColumn _id;
   @override
@@ -642,11 +643,11 @@ class $MovementTable extends Movement with TableInfo<$MovementTable, Movement> {
   List<GeneratedColumn> get $columns =>
       [id, description, categoryId, value, dateMovement, active];
   @override
-  $MovementTable get asDslTable => this;
+  $MovementsTable get asDslTable => this;
   @override
-  String get $tableName => _alias ?? 'movement';
+  String get $tableName => _alias ?? 'movements';
   @override
-  final String actualTableName = 'movement';
+  final String actualTableName = 'movements';
   @override
   VerificationContext validateIntegrity(Insertable<Movement> instance,
       {bool isInserting = false}) {
@@ -697,8 +698,8 @@ class $MovementTable extends Movement with TableInfo<$MovementTable, Movement> {
   }
 
   @override
-  $MovementTable createAlias(String alias) {
-    return $MovementTable(_db, alias);
+  $MovementsTable createAlias(String alias) {
+    return $MovementsTable(_db, alias);
   }
 }
 
@@ -706,10 +707,10 @@ abstract class _$MyDatabase extends GeneratedDatabase {
   _$MyDatabase(QueryExecutor e) : super(SqlTypeSystem.defaultInstance, e);
   $CategoriesTable _categories;
   $CategoriesTable get categories => _categories ??= $CategoriesTable(this);
-  $MovementTable _movement;
-  $MovementTable get movement => _movement ??= $MovementTable(this);
+  $MovementsTable _movements;
+  $MovementsTable get movements => _movements ??= $MovementsTable(this);
   @override
   Iterable<TableInfo> get allTables => allSchemaEntities.whereType<TableInfo>();
   @override
-  List<DatabaseSchemaEntity> get allSchemaEntities => [categories, movement];
+  List<DatabaseSchemaEntity> get allSchemaEntities => [categories, movements];
 }

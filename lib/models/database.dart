@@ -1,4 +1,5 @@
 import 'package:moor/moor.dart';
+import 'package:moor_flutter/moor_flutter.dart';
 part 'database.g.dart';
 
 @DataClassName("Category")
@@ -13,7 +14,7 @@ class Categories extends Table{
 }
 
 @DataClassName("Movement")
-class Movement extends Table{
+class Movements extends Table{
 
   IntColumn get id => integer().autoIncrement()();
   TextColumn get description => text().withLength(min: 0, max:50)();
@@ -24,7 +25,41 @@ class Movement extends Table{
 
 }
 
-@UseMoor(tables:[Categories,Movement])
-class MyDatabase{
- 
+class MovementFull{
+
+  final  Categories category;
+  final Movements movement;
+
+  MovementFull( this.category, this.movement );
+
+  
+}
+
+@UseMoor(tables:[Categories,Movements])
+class MyDatabase extends _$MyDatabase{
+  MyDatabase() : super(FlutterQueryExecutor.inDatabaseFolder(
+            path: "db.sqlite", logStatements: true));
+
+
+  Future<List<MovementFull>> getMovementsByDate( DateTime dateStart, DateTime dateEnd ) async {
+    print("999999999999999");
+    final query = select( movements ).join([
+      innerJoin( categories, categories.id.equalsExp(movements.id) )
+    ]).map((row){
+      print("-----------------------------------------");
+      print(row.toString());
+      return MovementFull( null, null);
+    }).get();
+
+
+
+
+
+    return query;
+  }
+
+  @override
+  // TODO: implement schemaVersion
+  int get schemaVersion =>  1;
+
 }
