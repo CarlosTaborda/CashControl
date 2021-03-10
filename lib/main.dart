@@ -8,6 +8,7 @@ void main() {
     GetMaterialApp(
       home:HomeView(),
       getPages: views,
+      theme: new ThemeData(scaffoldBackgroundColor: Color(0xFF090a0a)),
     )
   );
 }

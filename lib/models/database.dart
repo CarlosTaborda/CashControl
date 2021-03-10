@@ -59,7 +59,6 @@ class MyDatabase extends _$MyDatabase{
   }
 
   @override
-  // TODO: implement schemaVersion
   int get schemaVersion =>  1;
 
 }
