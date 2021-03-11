@@ -14,7 +14,9 @@ class _SettingsViewState extends State<SettingsView> {
     return Scaffold(
       bottomNavigationBar: MenuApp(),
       body: Scaffold(
-        body: Text("settings"),
+        body: Center(
+          child: Text("Settings",style: TextStyle(color:Colors.white),),
+        ),
       ),
     );
   }

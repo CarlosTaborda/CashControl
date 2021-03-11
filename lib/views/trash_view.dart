@@ -14,7 +14,9 @@ class _TrashViewState extends State<TrashView> {
     return Scaffold(
       bottomNavigationBar: MenuApp(),
       body: Scaffold(
-        body: Text("trash"),
+        body: Center(
+          child: Text("Trash",style: TextStyle(color:Colors.white),),
+        ),
       ),
     );
   }

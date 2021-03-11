@@ -17,7 +17,7 @@ class _MenuAppState extends State<MenuApp> {
   void initState( ) {
 
     super.initState();
-    _color = Colors.teal[900];
+    _color = Color(0xFF3e563e);
     _menuIndex=Get.arguments==null?0:Get.arguments;
   }
 
@@ -36,6 +36,7 @@ class _MenuAppState extends State<MenuApp> {
         ]
       ),
       child: ClipRRect(
+        
         borderRadius: BorderRadius.only(
           topLeft: Radius.circular(25), topRight: Radius.circular(25)
         ),

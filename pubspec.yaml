@@ -39,6 +39,12 @@ dev_dependencies:
     sdk: flutter
   moor_generator:
   build_runner:
+  flutter_launcher_icons: ^0.7.4
+
+flutter_icons:
+  image_path: "assets/img/icon_512x512.png"
+  android: true
+  ios: true
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
