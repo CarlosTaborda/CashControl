@@ -88,7 +88,9 @@ class _CrearCategoriaState extends State<CrearCategoria> {
         key: _formKey,
         child: Column(
           children: [
-            TextFormField()
+            TextFormField(
+              
+            )
           ],
         )
       )

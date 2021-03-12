@@ -8,8 +8,13 @@ void main() {
     GetMaterialApp(
       home:HomeView(),
       getPages: views,
-      theme: new ThemeData(
+      theme: ThemeData(
         scaffoldBackgroundColor: Color(0xFF091008),
+        inputDecorationTheme: InputDecorationTheme(
+          fillColor: Color(0xff93a889), 
+          filled: true,
+          focusedBorder: UnderlineInputBorder(borderSide: BorderSide( color: Colors.green))
+        )
         
       ),
       defaultTransition: Transition.fadeIn,
