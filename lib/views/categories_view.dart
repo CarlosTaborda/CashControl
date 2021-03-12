@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+
+import '../wigets/switch.dart';
 import 'appbar_view.dart';
 
 class CategoriesView extends StatefulWidget {
@@ -22,14 +24,11 @@ class _CategoriesViewState extends State<CategoriesView> {
         appBar: AppBar(
           title: SizedBox(
             child: Text(
-              "Categorias",
-              style: TextStyle(color: Colors.white, ),
+              "Categoría",
             ),
             height: 30,
           ),
           leading: Container(),
-          centerTitle: true,
-          backgroundColor: Color( 0xFF1f2f22),
           bottom: PreferredSize(
             preferredSize: Size(Get.width/2, 20),
             child: Align(
@@ -56,10 +55,19 @@ class _CategoriesViewState extends State<CategoriesView> {
           ),
         ),
         bottomNavigationBar: MenuApp(),
+        floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+        floatingActionButton: FloatingActionButton(
+          onPressed: () {
+            Get.toNamed("/CreateEditCategory", arguments: [false]);
+          },
+          child: Icon( Icons.add ),
+          backgroundColor: Color(0xff93a889),
+        ),
+        extendBody: true,
         body: TabBarView(
           children:[
             Center(child: Text("Listar", style: TextStyle(color: Colors.white),)),
-            CrearCategoria(),
+            ListCategories(),
           ] 
         ),
         
@@ -70,31 +78,84 @@ class _CategoriesViewState extends State<CategoriesView> {
 }
 
 
-class CrearCategoria extends StatefulWidget {
+class ListCategories extends StatefulWidget {
+  ListCategories({Key key}) : super(key: key);
 
   @override
-  _CrearCategoriaState createState() => _CrearCategoriaState();
+  _ListCategoriesState createState() => _ListCategoriesState();
 }
 
-class _CrearCategoriaState extends State<CrearCategoria> {
+class _ListCategoriesState extends State<ListCategories> {
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+       child: Text(
+         "Listado de Categorias",
+         style: TextStyle(color: Colors.white),
+       ),
+    );
+  }
+}
+
+
+
+
+class CreateEditCategory extends StatefulWidget {
+
+  @override
+  _CreateEditCategoryState createState() => _CreateEditCategoryState();
+}
+
+class _CreateEditCategoryState extends State<CreateEditCategory> {
 
   final _formKey = GlobalKey<FormState>();
+  bool _edit;
+  int _categoryId;
+
+  @override
+  void initState() {
+    super.initState();
+    final _args = Get.arguments;
+
+    _edit = _args[0];
+    if( _edit )
+      _categoryId = _args[1];
+
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      margin: EdgeInsets.all(20),
-      child: Form(
-        key: _formKey,
-        child: Column(
-          children: [
-            TextFormField(
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(_edit == true?"Editar Categoría":"Crear Categoría"),
+        centerTitle: true,
+      ),
+
+      body: Container(
+        margin: EdgeInsets.symmetric(vertical: 10, horizontal: 25),
+        child: Form(
+          key: _formKey,
+          child: ListView(
+            children: [
+              TextFormField(
+
+                decoration: InputDecoration(
+                  labelText: "Nombre",
+                  alignLabelWithHint: true,
+                ),
+              ),
+              MySwitch(
+                initValue: true,
+                inputTitle: "INGRESO",
+                outputTitle: "EGRESO",
+
+                onChange: (estado)=>print(estado),
+              ),
               
-            )
-          ],
-        )
-      )
-   
+            ],
+          )
+        ),
+      ),
     );
   }
 }

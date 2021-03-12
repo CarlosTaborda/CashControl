@@ -11,13 +11,11 @@ class MenuApp extends StatefulWidget {
 class _MenuAppState extends State<MenuApp> {
 
   int _menuIndex;
-  Color _color;
 
   @override
   void initState( ) {
 
     super.initState();
-    _color = Color(0xFF3e563e);
     _menuIndex=Get.arguments==null?0:Get.arguments;
   }
 
@@ -40,38 +38,50 @@ class _MenuAppState extends State<MenuApp> {
         borderRadius: BorderRadius.only(
           topLeft: Radius.circular(25), topRight: Radius.circular(25)
         ),
-        child: BottomNavigationBar( 
-          items: <BottomNavigationBarItem>[
-            BottomNavigationBarItem(
-              icon: Icon(Icons.assessment_outlined),
-              label: this._menuIndex==0?"Resumen":"",
-              backgroundColor: _color,
-              activeIcon: Icon(Icons.assessment),
+        child: BottomAppBar( 
+          color: Color(0xFF3e563e),
+          shape: CircularNotchedRectangle(),
+          notchMargin: 12,
+          child: Container(
+            height: 60,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: _itemsMenu()
             ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.category_outlined),
-              label: this._menuIndex==1?"Categoría":"",
-              activeIcon: Icon(Icons.category),
-              backgroundColor: _color
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.delete_outline),
-              label: this._menuIndex==2?"Papelera":"",
-              activeIcon: Icon(Icons.delete),
-              backgroundColor: _color
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.settings_outlined),
-              label: this._menuIndex==3?"Configuración":"",
-              activeIcon: Icon(Icons.settings),
-              backgroundColor: _color
-            )
-          ],
-          onTap: _onTab,
-          currentIndex: _menuIndex,
-        ),
+          ),
+          ),
       ),
     );
+  }
+
+
+  List<TextButton> _itemsMenu(){
+    final items = [
+      {"name":"Resumen", "icon": Icons.assessment_outlined, "icon_2": Icons.assessment},
+      {"name":"Categoría", "icon": Icons.category_outlined, "icon_2": Icons.category},
+      {"name":"Papelera", "icon": Icons.delete_outline, "icon_2": Icons.delete},
+      {"name":"Configuración", "icon": Icons.settings_outlined, "icon_2": Icons.settings},
+    ];
+
+    List<TextButton> buttomItems = [];
+    for( int i=0; i< items.length; i++ ){
+      buttomItems.add(
+        TextButton(
+          onPressed: ()=>_onTab( i ), 
+          child: Column(
+            children: [
+              Icon( 
+                _menuIndex== i? items[i]["icon_2"] : items[i]["icon"],
+                color: Color(0xffced9df),
+              ),
+              Text( _menuIndex== i? items[i]["name"] : "", style: TextStyle(color: Color(0xffced9df)), )
+            ],
+          )
+        )
+      );
+    }
+
+    return buttomItems;
   }
 
   void _onTab( int index){
@@ -96,3 +106,4 @@ class _MenuAppState extends State<MenuApp> {
     
   }
 }
+

@@ -14,8 +14,12 @@ void main() {
           fillColor: Color(0xff93a889), 
           filled: true,
           focusedBorder: UnderlineInputBorder(borderSide: BorderSide( color: Colors.green))
-        )
-        
+        ),
+        appBarTheme: AppBarTheme(
+          centerTitle: true,
+          backgroundColor: Color( 0xFF1f2f22),
+          //color: Colors.white          
+        ),  
       ),
       defaultTransition: Transition.fadeIn,
       transitionDuration: Duration(milliseconds: 300),
