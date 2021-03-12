@@ -25,7 +25,7 @@ class _CategoriesViewState extends State<CategoriesView> {
               "Categorias",
               style: TextStyle(color: Colors.white, ),
             ),
-            height: 15,
+            height: 30,
           ),
           leading: Container(),
           centerTitle: true,
@@ -38,6 +38,13 @@ class _CategoriesViewState extends State<CategoriesView> {
                 width: Get.width/2,
                 child: TabBar(
                   labelPadding: EdgeInsets.all(2),
+                  indicator: BoxDecoration(
+                    
+                    border: Border(
+                      bottom: BorderSide(style: BorderStyle.solid,width: 5, color: Color(0xFF7993a0) ),
+                      
+                    )
+                  ),
                   tabs:[
                     Tab(text:"GASTOS"), 
                     Tab(text:"INGRESOS"),
