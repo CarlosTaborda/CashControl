@@ -1,7 +1,11 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import '../wigets/switch.dart';
+import '../controllers/category_controller.dart';
+import '../models/database.dart';
 import 'appbar_view.dart';
 
 class CategoriesView extends StatefulWidget {
@@ -66,8 +70,8 @@ class _CategoriesViewState extends State<CategoriesView> {
         extendBody: true,
         body: TabBarView(
           children:[
-            Center(child: Text("Listar", style: TextStyle(color: Colors.white),)),
-            ListCategories(),
+            ListCategories(type: 0),
+            ListCategories(type: 1),
           ] 
         ),
         
@@ -79,21 +83,81 @@ class _CategoriesViewState extends State<CategoriesView> {
 
 
 class ListCategories extends StatefulWidget {
-  ListCategories({Key key}) : super(key: key);
+
+  final int type;
+  ListCategories({Key key, this.type}) : super(key: key);
 
   @override
-  _ListCategoriesState createState() => _ListCategoriesState();
+  _ListCategoriesState createState() => _ListCategoriesState(type);
 }
 
 class _ListCategoriesState extends State<ListCategories> {
+
+  final categoryCtrl = CategoryController();
+  final _type;
+  _ListCategoriesState(this._type);
+
   @override
   Widget build(BuildContext context) {
-    return Center(
-       child: Text(
-         "Listado de Categorias",
-         style: TextStyle(color: Colors.white),
-       ),
+    return FutureBuilder(
+      future: categoryCtrl.getByType(_type),
+      builder: (context, AsyncSnapshot<List<Category>> snapshot) {
+        if (!snapshot.hasData )
+          return Center(child: Text("NO HAY CATEGORIAS", style: TextStyle(color:Colors.white, fontWeight: FontWeight.bold)));
+        else{
+
+          if( snapshot.data.length == 0 ){
+            return Center(child: Text("NO HAY CATEGORIAS",style: TextStyle(color:Colors.white, fontWeight: FontWeight.bold),),);
+            
+          }
+          else{
+            return ListView(
+              children: snapshot.data.map((e) =>  ListTile(
+                  leading: Icon(Icons.circle, size: 40, color: Color( int.parse(e.color, radix: 16) ),),
+                  title: Container(
+                    width: Get.width*0.5,
+                    child: Text(e.name,style: TextStyle(color:Colors.white,),
+                  ),
+                  ),
+                  trailing: SizedBox(
+                      width: Get.width*0.3,
+                      child: Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        SizedBox(
+                          width: 35,
+                          child:TextButton(
+                            onPressed: ()=>_goToEdit( e.id ), 
+                            child: Icon( Icons.edit, color: Color(0xffced9df),)
+                          )
+                        ),
+                        SizedBox(
+                          width: 35,
+                          child:TextButton(
+                            onPressed: ()=>print("a"), 
+                            child: Icon( Icons.delete, color: Color(0xffced9df),)
+                          )
+                        ),
+
+                      ]
+                    ),
+                  ),
+                ),
+              ).toList(),
+            );
+          }
+
+        }
+      },
     );
+  }
+
+  void _goToEdit( int id ){
+    Get.toNamed("/CreateEditCategory", arguments: [true, id]).then((value){
+      setState(() {
+        
+      });
+    });
   }
 }
 
@@ -108,9 +172,15 @@ class CreateEditCategory extends StatefulWidget {
 
 class _CreateEditCategoryState extends State<CreateEditCategory> {
 
+
+  final _categoryController = CategoryController();
   final _formKey = GlobalKey<FormState>();
   bool _edit;
   int _categoryId;
+  String _name="";
+  String _color="";
+  bool   _state=true;
+  int    _type=1;
 
   @override
   void initState() {
@@ -118,9 +188,23 @@ class _CreateEditCategoryState extends State<CreateEditCategory> {
     final _args = Get.arguments;
 
     _edit = _args[0];
-    if( _edit )
+    if( _edit ){
       _categoryId = _args[1];
+      _getInfoCategory( _categoryId );
+    }
+      
 
+  }
+
+  void _getInfoCategory( int id ){
+    _categoryController.getById(id).then((c){
+      setState(() {
+        _name=c.name;
+        _color=c.color;
+        _type=c.type;
+        _state=c.active;
+      });
+    });
   }
 
   @override
@@ -137,25 +221,104 @@ class _CreateEditCategoryState extends State<CreateEditCategory> {
           key: _formKey,
           child: ListView(
             children: [
+              SizedBox(height: Get.height*0.08,),
               TextFormField(
-
+                initialValue: _name,
+                onChanged: (value)=>_name=value,
                 decoration: InputDecoration(
-                  labelText: "Nombre",
-                  alignLabelWithHint: true,
+                  labelText: "NOMBRE",
+                  labelStyle: TextStyle(
+                    color: Color(0xff091008)
+                  )
+
                 ),
               ),
+              SizedBox(height: 15,),
+              Text("COLOR",style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, ),),
+              SizedBox(height: 15,),
+              Container(
+                height: 60,
+                child: ListView(
+                  scrollDirection: Axis.horizontal,
+                  children: _buttonsCategoryColors(),
+                ),
+              ),
+              SizedBox(height: 15,),
               MySwitch(
-                initValue: true,
+                initValue: false,
                 inputTitle: "INGRESO",
                 outputTitle: "EGRESO",
-
-                onChange: (estado)=>print(estado),
+                incomeColor: Colors.green,
+                outColor: Colors.red,
+                onChange: ( value){
+                  setState(() {
+                    value == true ? _type = 1: _type=0;
+                  });
+                }
               ),
+              SizedBox(height: 30,),
+              ElevatedButton(
+                onPressed: _edit? _editCategory : _insertCategory, 
+                child: Text(_edit?"EDITAR":"CREAR", style: TextStyle(color: Colors.white),),
+                style: ButtonStyle(
+                  backgroundColor: MaterialStateProperty.all<Color>(Color(0xff3e563e))
+                ),
+              )
               
             ],
           )
         ),
       ),
     );
+  }
+
+  void _insertCategory(){
+    setState(() {
+      
+      print("_insertCategory($_name , $_color, true, $_type)");
+    _categoryController.create(_name, _color, true, _type);
+    });
+  }
+
+  void _editCategory(){
+    setState(() {
+      
+      print("_editCategory($_name , $_color, true, $_type, $_categoryId)");
+    _categoryController.edit(_name, _color, _state, _type, _categoryId).then((value) => Get.back());
+    });
+  }
+
+
+  List<Container> _buttonsCategoryColors(){
+    List<String> colors=[
+      "FF97d67f","FFffc125","ffff0040","ff61b3ff","ffb7a1ff","ff2b5454","ffffffff",
+      "ff31dede","ffc13ebf","ffc92020","fff4ec3d","ffe97a42","ff143fb0"
+    ];
+
+    List<Container> buttons = [];
+    for(String c in colors){
+      buttons.add(
+        Container(
+          decoration: new BoxDecoration(
+            color: Color( int.parse( c, radix: 16 ) ),
+            shape: BoxShape.circle,
+            border: new Border.all(
+              color: Colors.white,
+              width: 2.5,
+            ),
+          ),
+          child:TextButton(
+            onPressed: (){
+              setState(() {
+                _color = c;
+              });
+            }, 
+            child: Center(child: _color == c? Icon(Icons.check,size: 30,color: Colors.white) : Container(),)
+          )
+        )
+      );
+    }
+
+    return buttons;
   }
 }

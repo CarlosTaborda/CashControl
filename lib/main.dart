@@ -13,7 +13,8 @@ void main() {
         inputDecorationTheme: InputDecorationTheme(
           fillColor: Color(0xff93a889), 
           filled: true,
-          focusedBorder: UnderlineInputBorder(borderSide: BorderSide( color: Colors.green))
+          focusedBorder: UnderlineInputBorder(borderSide: BorderSide( color: Colors.green)),
+          border: OutlineInputBorder()
         ),
         appBarTheme: AppBarTheme(
           centerTitle: true,
