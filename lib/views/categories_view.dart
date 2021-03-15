@@ -62,7 +62,9 @@ class _CategoriesViewState extends State<CategoriesView> {
         floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
         floatingActionButton: FloatingActionButton(
           onPressed: () {
-            Get.toNamed("/CreateEditCategory", arguments: [false]);
+            Get.toNamed("/CreateEditCategory", arguments: [false]).then((value){
+              setState(()=>null);
+            });
           },
           child: Icon( Icons.add ),
           backgroundColor: Color(0xff93a889),
@@ -134,7 +136,7 @@ class _ListCategoriesState extends State<ListCategories> {
                         SizedBox(
                           width: 35,
                           child:TextButton(
-                            onPressed: ()=>print("a"), 
+                            onPressed: ()=>_confirmDeleteCategory( e.id ), 
                             child: Icon( Icons.delete, color: Color(0xffced9df),)
                           )
                         ),
@@ -159,6 +161,69 @@ class _ListCategoriesState extends State<ListCategories> {
       });
     });
   }
+
+  void _confirmDeleteCategory( int id){
+    Get.defaultDialog(
+      title: "Confirmar",
+      middleText: "Desear borrar esta categoría, se borraran todos los movimientos asociados",
+      confirm: Container(
+        height: 40,
+        width: 95,
+        padding: EdgeInsets.symmetric( vertical: 8, horizontal: 10 ),
+        child: TextButton(
+          style: ButtonStyle(
+            padding: MaterialStateProperty.all<EdgeInsets>(EdgeInsets.zero)
+          ),
+          onPressed: ()=>_deleteCategory(id),
+          child: Text( "Eliminar", style: TextStyle(
+            color: Colors.white, 
+            fontSize: 16, fontWeight: FontWeight.bold), 
+            textAlign: TextAlign.center,
+          ),
+        ),
+        decoration: BoxDecoration(
+          
+          color: Colors.red,
+          borderRadius: BorderRadius.all(Radius.circular(5))
+        ),
+      ),
+      cancel: Container(
+        height: 40,
+        width: 90,
+        padding: EdgeInsets.symmetric( vertical: 8, horizontal: 10 ),
+        child: TextButton(
+            style: ButtonStyle(
+              padding: MaterialStateProperty.all<EdgeInsets>(EdgeInsets.zero)
+
+            ),
+              onPressed: ()=>Get.back(),
+            child: Text( "Cancelar", style: TextStyle(
+              color: Colors.red, 
+              fontSize: 16, 
+              fontWeight: FontWeight.bold,          
+            ),
+            textAlign: TextAlign.center, 
+          ),
+        ),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.all(Radius.circular(5)),
+          border: Border.all(color:Colors.red) 
+        ),
+      )
+
+    ).then((value){
+      setState(() {
+        
+      });
+    });
+  }
+
+  void _deleteCategory( int id ){
+    categoryCtrl.delete(id).then((value){
+      Get.back();
+    });
+  }
 }
 
 
@@ -175,6 +240,7 @@ class _CreateEditCategoryState extends State<CreateEditCategory> {
 
   final _categoryController = CategoryController();
   final _formKey = GlobalKey<FormState>();
+  final _nameCtrl = TextEditingController();
   bool _edit;
   int _categoryId;
   String _name="";
@@ -200,6 +266,7 @@ class _CreateEditCategoryState extends State<CreateEditCategory> {
     _categoryController.getById(id).then((c){
       setState(() {
         _name=c.name;
+        _nameCtrl.text = _name;
         _color=c.color;
         _type=c.type;
         _state=c.active;
@@ -223,8 +290,7 @@ class _CreateEditCategoryState extends State<CreateEditCategory> {
             children: [
               SizedBox(height: Get.height*0.08,),
               TextFormField(
-                initialValue: _name,
-                onChanged: (value)=>_name=value,
+                controller: _nameCtrl,
                 decoration: InputDecoration(
                   labelText: "NOMBRE",
                   labelStyle: TextStyle(
@@ -244,18 +310,37 @@ class _CreateEditCategoryState extends State<CreateEditCategory> {
                 ),
               ),
               SizedBox(height: 15,),
-              MySwitch(
-                initValue: false,
-                inputTitle: "INGRESO",
-                outputTitle: "EGRESO",
-                incomeColor: Colors.green,
-                outColor: Colors.red,
-                onChange: ( value){
-                  setState(() {
-                    value == true ? _type = 1: _type=0;
-                  });
-                }
-              ),
+              if( ! _edit  )
+                MySwitch(
+                  initValue: false,
+                  inputTitle: "INGRESO",
+                  iconInput: Icons.arrow_downward,
+                  iconOutput: Icons.arrow_upward,
+                  outputTitle: "EGRESO",
+                  incomeColor: Colors.green,
+                  outColor: Colors.red,
+                  onChange: ( value){
+                    setState(() {
+                      value == true ? _type = 1: _type=0;
+                    });
+                  }
+                )
+              else
+                MySwitch(
+                  initValue: _state,
+                  inputTitle: "ACTIVO",
+                  iconInput: Icons.check,
+                  iconOutput: Icons.close,
+                  outputTitle: "INACTIVO",
+                  incomeColor: Colors.green,
+                  outColor: Colors.red,
+                  onChange: ( value){
+                    setState(() {
+                      _state = value;
+                    });
+                  }
+                )
+              ,
               SizedBox(height: 30,),
               ElevatedButton(
                 onPressed: _edit? _editCategory : _insertCategory, 
@@ -275,16 +360,18 @@ class _CreateEditCategoryState extends State<CreateEditCategory> {
   void _insertCategory(){
     setState(() {
       
-      print("_insertCategory($_name , $_color, true, $_type)");
-    _categoryController.create(_name, _color, true, _type);
+      _name = _nameCtrl.text;
+      _categoryController.create(_name, _color, true, _type).then((value){
+      Get.back();
+    });
     });
   }
 
   void _editCategory(){
     setState(() {
-      
+      _name = _nameCtrl.text;
       print("_editCategory($_name , $_color, true, $_type, $_categoryId)");
-    _categoryController.edit(_name, _color, _state, _type, _categoryId).then((value) => Get.back());
+      _categoryController.edit(_name, _color, _state, _type, _categoryId).then((value) => Get.back());
     });
   }
 

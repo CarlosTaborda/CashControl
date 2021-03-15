@@ -7,6 +7,9 @@ class MySwitch extends StatefulWidget {
   final String outputTitle;
   final Color incomeColor;
   final Color outColor;
+  final IconData iconInput;
+  final IconData iconOutput;
+
 
   MySwitch({
     Key key, 
@@ -14,13 +17,15 @@ class MySwitch extends StatefulWidget {
     @required this.onChange, 
     this.inputTitle="", 
     this.outputTitle="",
+    @required this.iconInput,
+    @required this.iconOutput,
     @required this.incomeColor,
     @required this.outColor
 
   }) : super(key: key);
 
   @override
-  _MySwitchState createState() => _MySwitchState( initValue, onChange, inputTitle, outputTitle, incomeColor, outColor);
+  _MySwitchState createState() => _MySwitchState( initValue, onChange, inputTitle, outputTitle, incomeColor, outColor, iconInput, iconOutput);
 }
 
 class _MySwitchState extends State<MySwitch> {
@@ -31,10 +36,14 @@ class _MySwitchState extends State<MySwitch> {
   String _outputTitle;
   Color _incomeColor;
   Color _outColor;
+  IconData _iconInput;
+  IconData _iconOutput;
 
 
 
-  _MySwitchState( this._value, this._onChange, this._inputTitle, this._outputTitle, this._incomeColor, this._outColor );
+
+  _MySwitchState( this._value, this._onChange, this._inputTitle, this._outputTitle, 
+    this._incomeColor, this._outColor, this._iconInput, this._iconOutput );
 
 
   @override
@@ -73,7 +82,7 @@ class _MySwitchState extends State<MySwitch> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Icon( Icons.arrow_downward, color: Colors.white, ),
+                Icon( _iconInput, color: Colors.white, ),
                 Text(
                   _inputTitle,
                   style: TextStyle(
@@ -100,7 +109,7 @@ class _MySwitchState extends State<MySwitch> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Icon( Icons.arrow_upward, color: Colors.white, ),
+                Icon( _iconOutput, color: Colors.white, ),
                 Text(
                   _outputTitle,
                   style: TextStyle(
@@ -135,7 +144,7 @@ class _MySwitchState extends State<MySwitch> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Icon( Icons.arrow_downward, color: Colors.white, ),
+                Icon( _iconInput, color: Colors.white, ),
                 Text(
                   _inputTitle,
                   style: TextStyle(
@@ -163,7 +172,7 @@ class _MySwitchState extends State<MySwitch> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Icon( Icons.arrow_upward, color: Colors.white, ),
+                Icon( _iconOutput, color: Colors.white, ),
                 Text(
                   _outputTitle,
                   style: TextStyle(

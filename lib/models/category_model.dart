@@ -1,5 +1,3 @@
-import 'package:flutter/material.dart';
-
 import 'database.dart';
 
 class CategoryModel{
@@ -10,8 +8,8 @@ class CategoryModel{
     this.db = MyDatabase();
   }
 
-  Future<int> create(String name, String color, bool active, int type) {
-    return db.into(db.categories).insert(
+  Future<int> create(String name, String color, bool active, int type) async {
+    return await db.into(db.categories).insert(
       Category( 
         id: null,
         name: name, 
@@ -24,6 +22,16 @@ class CategoryModel{
 
   Future<List<Category>> getByType( int type ) async {
     final categories = await (db.select(db.categories)..where((tbl) => tbl.type.equals(type))).get();
+    return categories;
+  }
+
+
+  Future<List<Category>> getByTypeAndState( int type, bool state ) async {
+    final categories = await (
+      db.select(db.categories)
+        ..where((tbl) => tbl.type.equals(type))
+        ..where((tbl) => tbl.active.equals(state))
+    ).get();
     return categories;
   }
 
@@ -41,5 +49,13 @@ class CategoryModel{
       active: active
     ));
     return result;
+  }
+
+
+  Future<bool> delete( int id ) async  {
+    await (db.delete(db.movements)..where((tbl) => tbl.categoryId.equals(id))).go();
+    final result = await (db.delete(db.categories)..where((tbl) => tbl.id.equals(id))).go();
+
+    return result > 0;
   }
 }

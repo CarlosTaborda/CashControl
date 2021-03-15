@@ -6,9 +6,9 @@ class CategoryController extends GetxController{
   final CategoryModel categoryModel = CategoryModel();
   
 
-  bool create(String name, String color, bool active, int type){
-    categoryModel.create(name, color, active, type).then((value) => print(value));
-    return true;
+  Future<bool> create(String name, String color, bool active, int type) async {
+    final result = await categoryModel.create(name, color, active, type);
+    return result>-1;
   }
 
   Future<List<Category>> getByType(int type) async{
@@ -23,6 +23,11 @@ class CategoryController extends GetxController{
 
   Future<bool> edit(String name, String color, bool active, int type, int id) async{
     final result = await categoryModel.edit(name, color, active, type, id);
+    return result;
+  }
+
+  Future<bool> delete( int id ) async{
+    final result = await categoryModel.delete(id);
     return result;
   }
 }

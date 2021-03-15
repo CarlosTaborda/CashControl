@@ -10,6 +10,7 @@ final views = [
   GetPage(name: "/", page: ()=>HomeView()),
   GetPage(name: "/Categories", page: ()=>CategoriesView()),
   GetPage(name: "/CreateEditCategory", page: ()=>CreateEditCategory()),
+  GetPage(name: "/CreateEditMovement", page: ()=>CreateEditMovement()),
   GetPage(name: "/Trash", page: ()=>TrashView()),
   GetPage(name: "/Settings", page: ()=>SettingsView()),
 ];
