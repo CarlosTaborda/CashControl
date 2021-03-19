@@ -18,6 +18,18 @@ class HomeView extends StatefulWidget {
 class _HomeViewState extends State<HomeView> {
 
   final movementsCtrl = MovementController() ;
+  DateTime _dateStart = DateTime.now();
+  DateTime _dateEnd = DateTime.now();
+
+  @override
+  void initState() {
+    
+    super.initState();
+    final DateTime now = DateTime.now();
+    _dateStart = DateTime(now.year, now.month, 1);
+    _dateEnd  = now.month < 12 ? DateTime(now.year, now.month + 1, 1) : DateTime(now.year+1,  1, 1);
+
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -32,9 +44,36 @@ class _HomeViewState extends State<HomeView> {
         child: Icon( Icons.add ),
         backgroundColor: Color(0xff93a889),
       ),
-      body:Center( child: Text("RESUMEN", style: TextStyle( color:Colors.white ),), ),
+      body: ListView(
+        children: [
+          _listMovements()
+        ],
+      ),
       bottomNavigationBar: MenuApp(),
     );
+  }
+
+
+  Widget _listMovements(){
+
+    return FutureBuilder(
+      future: movementsCtrl.getMovements(_dateStart, _dateEnd),
+      builder: (BuildContext context, AsyncSnapshot<List<MovementFull>> response ){
+
+        if( !response.hasData ){
+          return Column(children: []);
+        }else{
+          return Column(
+            children: [
+
+            ],
+          );
+        }
+        
+      
+      }
+    );
+
   }
 }
 
@@ -56,6 +95,7 @@ class _CreateEditMovementState extends State<CreateEditMovement> with SingleTick
   final _descriptionCtrl = TextEditingController();
   final _valueCtrl       = TextEditingController();
   String _color          = "";
+  int _categoryId        = null;
   final _formKey         = GlobalKey<FormState>();
   DateTime _dateMovement = DateTime.now();
   final _movementCtrl    = MovementController();
@@ -121,20 +161,28 @@ class _CreateEditMovementState extends State<CreateEditMovement> with SingleTick
             ),
             Container(
               width: Get.width,
-              height: 200,
+              height: 120,
               child: TabBarView(
-              controller: _tabController,
+                controller: _tabController,
 
-              children: [
-                _listCategories(0),
-                _listCategories(1)
-              ]
+                children: [
+                  _listCategories(0),
+                  _listCategories(1)
+                ]
+              ),
             ),
-            )
+            ElevatedButton(onPressed: ()=>createMovement(), child: Text("CREAR"))
             
           ]
         ),
       );
+  }
+
+  void createMovement(){
+    setState(() {
+      print( "createMovement( ${_descriptionCtrl.text}, $_categoryId, ${_valueCtrl.text}, ${_dateMovement.toString()} )" );
+      _movementCtrl.create(_descriptionCtrl.text, _categoryId, double.parse( _valueCtrl.text ), _dateMovement, true).then((value) => Get.back());
+    });
   }
 
 
@@ -151,6 +199,7 @@ class _CreateEditMovementState extends State<CreateEditMovement> with SingleTick
                 onTap: (){
                   setState(() {
                     _color = c.color;
+                    _categoryId = c.id;
                   });
                 },
                 title: Container(

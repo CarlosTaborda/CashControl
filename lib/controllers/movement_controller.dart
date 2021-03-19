@@ -22,4 +22,10 @@ class MovementController{
 
     return categories;
   }
+
+  Future<List<MovementFull>> getMovements(DateTime dateStart, DateTime dateEnd) async{
+    final movements = await movementMdl.getMovements(dateStart, dateEnd);
+    return movements;
+  }
+  
 }

@@ -1,5 +1,6 @@
 import 'database.dart';
 
+
 class MovementModel{
 
   final db = MyDatabase();
@@ -15,5 +16,10 @@ class MovementModel{
     ));
 
     return insertId;
+  }
+
+  Future<List<MovementFull>> getMovements(DateTime dateStart, DateTime dateEnd) async {
+    final movements = await db.getMovementsByDate(dateStart, dateEnd);
+    return movements;
   }
 }

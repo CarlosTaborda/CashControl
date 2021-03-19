@@ -27,8 +27,8 @@ class Movements extends Table{
 
 class MovementFull{
 
-  final  Categories category;
-  final Movements movement;
+  final  Category category;
+  final Movement movement;
 
   MovementFull( this.category, this.movement );
 
@@ -43,13 +43,12 @@ class MyDatabase extends _$MyDatabase{
 
   Future<List<MovementFull>> getMovementsByDate( DateTime dateStart, DateTime dateEnd ) async {
     print("999999999999999");
-    final query = select( movements ).join([
-      innerJoin( categories, categories.id.equalsExp(movements.id) )
-    ]).map((row){
-      print("-----------------------------------------");
-      print(row.toString());
-      return MovementFull( null, null);
-    }).get();
+    final query = await (select( movements ).where((mv)=>mv.dateMovement.isBetweenValues(dateStart, dateEnd))
+    ..join([
+      innerJoin( categories, categories.id.equalsExp(movements.categoryId) & movements.dateMovement.isBetweenValues(dateStart, dateEnd) )
+    ]).map<MovementFull>((row){
+      return MovementFull(row.readTable(categories), row.readTable(movements));
+    })).get();
 
 
 
