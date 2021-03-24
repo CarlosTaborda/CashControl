@@ -43,12 +43,11 @@ class MyDatabase extends _$MyDatabase{
 
   Future<List<MovementFull>> getMovementsByDate( DateTime dateStart, DateTime dateEnd ) async {
     print("999999999999999");
-    final query = await (select( movements ).where((mv)=>mv.dateMovement.isBetweenValues(dateStart, dateEnd))
-    ..join([
+    final query = await (
+      select( movements )..where((mv)=>mv.dateMovement.isBetweenValues(dateStart, dateEnd))
+    ).join([
       innerJoin( categories, categories.id.equalsExp(movements.categoryId) & movements.dateMovement.isBetweenValues(dateStart, dateEnd) )
-    ]).map<MovementFull>((row){
-      return MovementFull(row.readTable(categories), row.readTable(movements));
-    })).get();
+    ]).map((result) => MovementFull( result.readTable(categories), result.readTable(movements) )).get();
 
 
 

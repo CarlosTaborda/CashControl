@@ -44,10 +44,8 @@ class _HomeViewState extends State<HomeView> {
         child: Icon( Icons.add ),
         backgroundColor: Color(0xff93a889),
       ),
-      body: ListView(
-        children: [
-          _listMovements()
-        ],
+      body: Container(
+        child: _listMovements(),
       ),
       bottomNavigationBar: MenuApp(),
     );
@@ -63,10 +61,12 @@ class _HomeViewState extends State<HomeView> {
         if( !response.hasData ){
           return Column(children: []);
         }else{
-          return Column(
-            children: [
-
-            ],
+          print(response.data.length);
+          return ListView(
+            children: response.data.map((e) => ListTile(
+              leading:Icon(Icons.circle, color: Color(int.parse(e.category.color, radix:16)),size: 30,),
+              title: Text(e.movement.description, style: TextStyle(color: Colors.white),),),
+            ).toList(),
           );
         }
         
