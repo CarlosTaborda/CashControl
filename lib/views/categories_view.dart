@@ -49,8 +49,8 @@ class _CategoriesViewState extends State<CategoriesView> {
                     )
                   ),
                   tabs:[
-                    Tab(text:"GASTOS"), 
-                    Tab(text:"INGRESOS"),
+                    Tab(text:"INGRESOS"), 
+                    Tab(text:"GASTOS"),
                   ],
                   indicatorColor: Color(0xFF7993A0),            
                 ),
@@ -72,8 +72,9 @@ class _CategoriesViewState extends State<CategoriesView> {
         extendBody: true,
         body: TabBarView(
           children:[
-            ListCategories(type: 0),
             ListCategories(type: 1),
+            ListCategories(type: 0),
+            
           ] 
         ),
         
