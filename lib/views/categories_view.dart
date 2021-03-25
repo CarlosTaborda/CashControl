@@ -317,7 +317,7 @@ class _CreateEditCategoryState extends State<CreateEditCategory> {
                   inputTitle: "INGRESO",
                   iconInput: Icons.arrow_downward,
                   iconOutput: Icons.arrow_upward,
-                  outputTitle: "EGRESO",
+                  outputTitle: "GASTO",
                   incomeColor: Colors.green,
                   outColor: Colors.red,
                   onChange: ( value){

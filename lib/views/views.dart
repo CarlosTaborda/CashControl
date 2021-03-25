@@ -8,6 +8,7 @@ import 'settings_view.dart';
 
 final views = [
   GetPage(name: "/", page: ()=>HomeView()),
+  GetPage(name: "/MovementsChart", page: ()=>MovementsChart()),
   GetPage(name: "/Categories", page: ()=>CategoriesView()),
   GetPage(name: "/CreateEditCategory", page: ()=>CreateEditCategory()),
   GetPage(name: "/CreateEditMovement", page: ()=>CreateEditMovement()),
