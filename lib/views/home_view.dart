@@ -6,6 +6,7 @@ import 'package:syncfusion_flutter_charts/charts.dart';
 
 import '../controllers/movement_controller.dart';
 import '../models/database.dart';
+import '../wigets/month_picker_dialog.dart';
 import 'appbar_view.dart';
 
 
@@ -25,6 +26,7 @@ class _HomeViewState extends State<HomeView> {
   DateTime _dateEnd    = DateTime.now();
   double _totalInputs  = 0;
   double _totalOutputs = 0;
+  DateTime _dateMovement=DateTime.now();
   List<Map<String, dynamic>> _listCategories = [];
 
   @override
@@ -117,7 +119,7 @@ class _HomeViewState extends State<HomeView> {
       builder: (BuildContext context, AsyncSnapshot<List<MovementFull>> response ){
 
         if( !response.hasData ){
-          return Column(children: []);
+          return Container();
         }else{
           _calcValues( response.data );
           
@@ -138,6 +140,14 @@ class _HomeViewState extends State<HomeView> {
     List<Widget> element = [];
 
     double _percentOutput = 0;
+    
+
+    element.add(Center(
+      child: ElevatedButton(
+        child: Text("Fecha ${_dateMovement.year}-${_dateMovement.month}" ),
+        onPressed: ()=>_showMonthPicker(),
+      ),
+    ));
 
     if( _totalInputs > 0)
       _percentOutput = (_totalOutputs*100)/_totalInputs;
@@ -289,7 +299,7 @@ class _HomeViewState extends State<HomeView> {
               ),
             )
           ),
-          onTap: ()=>Get.toNamed("/MovementsChart", arguments: [ _totalInputs, _totalOutputs, _listCategories]),
+          onTap: ()=>Get.toNamed("/MovementsChart", arguments: [ _totalInputs, _totalOutputs, _listCategories, _dateStart, _dateEnd]),
         )
       )
     );
@@ -328,8 +338,35 @@ class _HomeViewState extends State<HomeView> {
       ) 
     ).toList());
 
+    if(ms.length == 0)
+      element.add(Center(
+        child: Text("NO HAY MOVIMIENTOS",
+          style: TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.bold
+          ),
+        ),
+      ));
+
 
     return element;
+  }
+
+
+  void _showMonthPicker() async {
+    
+    showMonthPicker(
+      context: Get.context,
+      initialDate: _dateMovement,
+      firstDate: DateTime.utc(2010),
+      lastDate: DateTime.now(),
+      
+    ).then((value){
+      setState(() {
+        _dateStart = value;
+        _dateEnd = value.month < 12 ? DateTime(value.year, value.month + 1, 1) : DateTime(value.year+1,  1, 1);
+      });
+    });
   }
 }
 
@@ -348,10 +385,10 @@ class _CreateEditMovementState extends State<CreateEditMovement> with SingleTick
 
   bool _edit;
   TabController _tabController;
+  int _categoryId;
   final _descriptionCtrl = TextEditingController();
   final _valueCtrl       = TextEditingController();
   String _color          = "";
-  int _categoryId        = null;
   final _formKey         = GlobalKey<FormState>();
   DateTime _dateMovement = DateTime.now();
   final _movementCtrl    = MovementController();
@@ -547,6 +584,9 @@ class _MovementsChartState extends State<MovementsChart> {
 
   double _totalInputs = 0;
   double _totalOutputs = 0;
+  DateTime _dteStart;
+  DateTime _dteEnd;
+
   List<Map> _categories;
   final _moneyFmt = NumberFormat.simpleCurrency();
 
@@ -557,6 +597,9 @@ class _MovementsChartState extends State<MovementsChart> {
     _totalInputs  = Get.arguments[0];
     _totalOutputs = Get.arguments[1];
     _categories   = Get.arguments[2];
+    _dteStart     = Get.arguments[3];
+    _dteEnd       = Get.arguments[4];
+
 
 
   }
@@ -739,7 +782,7 @@ class _MovementsChartState extends State<MovementsChart> {
 
 
     List<Map> chartData = [
-      {"name":cat["name"], "value": _percent, "color": cat["input"]? Colors.green: Colors.red[700]},
+      {"name":cat["name"], "value": num.parse( _percent.toStringAsFixed(2)), "color": cat["input"]? Colors.green: Colors.red[700]},
       {"name":"saldo", "value": 100-_percent, "color": Color(0xff3e563e)},
 
     ];
@@ -749,33 +792,218 @@ class _MovementsChartState extends State<MovementsChart> {
       margin: EdgeInsets.all(5),
       child: Card(
         color: Color(0xff1f2f22),
-        child: Column(
-          children: [
-            Container(
-              height: Get.width * 0.35,
-              child: SfCircularChart(
-                series: <CircularSeries>[
-                  DoughnutSeries<Map, String>(
-                      dataSource: chartData,
-                      pointColorMapper:(Map data,  _) => data["color"],
-                      xValueMapper: (Map data, _) => data["name"],
-                      yValueMapper: (Map data, _) => data["value"]
-                  )
-                ],
-              ),
-            ),
-            Text( 
-              cat["name"] ,
-              style: TextStyle(
-                fontSize: 18,
+        child: GestureDetector(
+          onTap: ()=>Get.toNamed("/ListMovements",arguments: [ cat["id"], _dteStart, _dteEnd ]),
+          child: Column(
+            children: [
+              SizedBox(height: 10,),
+              Text("${chartData[0]["value"]}%", style: TextStyle(
+                color: Get.theme.accentTextTheme.button.color,
                 fontWeight: FontWeight.bold,
-                color: Color(0xffced9df)
+                fontSize: 15
+              ),),
+              Container(
+                height: Get.width * 0.35,
+                child: SfCircularChart(
+                  series: <CircularSeries>[
+                    DoughnutSeries<Map, String>(
+                        dataSource: chartData,
+                        pointColorMapper:(Map data,  _) => data["color"],
+                        xValueMapper: (Map data, _) => data["name"],
+                        yValueMapper: (Map data, _) => data["value"]
+                    )
+                  ],
+                ),
               ),
+              Text( 
+                cat["name"] ,
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: Color(0xffced9df)
+                ),
+              ),
+              SizedBox(height: 5),
+              Text(
+                _moneyFmt.format(cat["value"]),
+                style: Get.textTheme.subtitle2,
+              ),
+              SizedBox(height: 10,)
+            ],
+          ),
+        )
+      ),
+    );
+  }
+}
+
+
+class ListMovements extends StatefulWidget {
+  ListMovements({Key key}) : super(key: key);
+
+  @override
+  _ListMovementsState createState() => _ListMovementsState();
+}
+
+class _ListMovementsState extends State<ListMovements> {
+
+  final _movementCtrl = MovementController();
+  final moneyFmt = NumberFormat.simpleCurrency();
+  DateTime _dateStart;
+  DateTime _dateEnd;
+  int _categoryId;
+  List<MovementFull> _movements;
+
+
+  @override
+  void initState() {
+    
+    _categoryId = Get.arguments[0];
+    _dateStart = Get.arguments[1];
+    _dateEnd = Get.arguments[2];
+
+
+    super.initState();
+    _movementCtrl.getMovementsByFilter(
+      _dateStart, _dateEnd, [_categoryId], [true]
+    ).then(( value ){
+      setState(() {
+        _movements = value;
+      });
+    });
+  }
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text("Movimientos"),
+        centerTitle: true,
+      ),
+      body: ListView(
+        children: _movements.map(_movementListItem).toList(),
+      ),
+    );
+  }
+
+
+  ListTile _movementListItem( MovementFull m ){
+    return ListTile(
+      leading: Icon(Icons.circle, color: Color(int.parse(m.category.color, radix: 16)),size: 30,),
+      title: Text(
+        m.movement.description,
+        style: Get.textTheme.headline6,
+      ),
+      subtitle: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text( 
+            m.category.name,
+            style: Get.textTheme.subtitle2,
+          ),
+          Text( 
+            moneyFmt.format(m.movement.value),
+            style: Get.textTheme.subtitle2,
+          ),
+          
+          Text( 
+            m.movement.dateMovement.toString().substring(0,10),
+            style: Get.textTheme.subtitle2,
+          ),
+
+        ],
+      ),
+      trailing: SizedBox(
+        width: Get.width * 0.2,
+        child: Row(
+          children: [
+            IconButton(
+              icon: Icon( 
+                Icons.edit,
+                color: Colors.white,
+                size: 30,
+              ), 
+              onPressed: ()=>print("edit")
             ),
-            SizedBox(height: 10,)
+            IconButton(
+              icon: Icon( 
+                Icons.delete,
+                color: Colors.white,
+                size: 30,
+              ), 
+              onPressed: ()=>_confirmDeleteMovement( m.movement )
+            ),
+
           ],
         ),
       ),
     );
+
   }
+
+  void _logicDelete( Movement m ){
+    _movementCtrl.edit(m.id, m.description, m.value, false, m.categoryId, m.dateMovement);
+    Get.back();
+  }
+
+
+  void _confirmDeleteMovement( Movement m ){
+    Get.defaultDialog(
+      title: "Confirmar",
+      middleText: "Desear borrar este movimiento de la lista?",
+      confirm: Container(
+        height: 40,
+        width: 95,
+        padding: EdgeInsets.symmetric( vertical: 8, horizontal: 10 ),
+        child: TextButton(
+          style: ButtonStyle(
+            padding: MaterialStateProperty.all<EdgeInsets>(EdgeInsets.zero)
+          ),
+          onPressed: ()=>_logicDelete(m),
+          child: Text( "Eliminar", style: TextStyle(
+            color: Colors.white, 
+            fontSize: 16, fontWeight: FontWeight.bold), 
+            textAlign: TextAlign.center,
+          ),
+        ),
+        decoration: BoxDecoration(
+          
+          color: Colors.red,
+          borderRadius: BorderRadius.all(Radius.circular(5))
+        ),
+      ),
+      cancel: Container(
+        height: 40,
+        width: 90,
+        padding: EdgeInsets.symmetric( vertical: 8, horizontal: 10 ),
+        child: TextButton(
+            style: ButtonStyle(
+              padding: MaterialStateProperty.all<EdgeInsets>(EdgeInsets.zero)
+
+            ),
+              onPressed: ()=>Get.back(),
+            child: Text( "Cancelar", style: TextStyle(
+              color: Colors.red, 
+              fontSize: 16, 
+              fontWeight: FontWeight.bold,          
+            ),
+            textAlign: TextAlign.center, 
+          ),
+        ),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.all(Radius.circular(5)),
+          border: Border.all(color:Colors.red) 
+        ),
+      )
+
+    ).then((value){
+      setState(() {
+        
+      });
+    });
+  }
+
+
+
+
 }

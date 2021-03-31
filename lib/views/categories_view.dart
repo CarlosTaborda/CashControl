@@ -313,7 +313,7 @@ class _CreateEditCategoryState extends State<CreateEditCategory> {
               SizedBox(height: 15,),
               if( ! _edit  )
                 MySwitch(
-                  initValue: false,
+                  initValue: _type==1,
                   inputTitle: "INGRESO",
                   iconInput: Icons.arrow_downward,
                   iconOutput: Icons.arrow_upward,

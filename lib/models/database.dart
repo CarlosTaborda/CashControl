@@ -41,6 +41,7 @@ class MyDatabase extends _$MyDatabase{
             path: "db.sqlite", logStatements: true));
 
 
+
   Future<List<MovementFull>> getMovementsByDate( DateTime dateStart, DateTime dateEnd ) async {
     final query = await (
       select( movements )..where((mv)=>mv.dateMovement.isBetweenValues(dateStart, dateEnd) & mv.active.equals(true))
@@ -54,6 +55,23 @@ class MyDatabase extends _$MyDatabase{
 
     return query;
   }
+
+
+  Future<List<MovementFull>> getMovementsByFilter( DateTime dateStart, DateTime dateEnd, List<int> categoriesId, List<bool> isActive ) async {
+
+    final query = await (
+      select( movements )..where((mv)=>mv.dateMovement.isBetweenValues(dateStart, dateEnd) & mv.active.isIn(isActive) & mv.categoryId.isIn(categoriesId) )
+    ).join([
+      innerJoin( categories, categories.id.equalsExp(movements.categoryId)  )
+    ]).map((result) => MovementFull( result.readTable(categories), result.readTable(movements) )).get();
+
+
+
+    return query;
+  }
+
+
+
 
   @override
   int get schemaVersion =>  1;

@@ -18,8 +18,25 @@ void main() {
         const Locale('es')
       ],
       theme: ThemeData(
-
+        primaryColor: Color(0xff3e563e),
+        textTheme: TextTheme(
+          headline6:  TextStyle(
+            color: Color(0xffced9df),
+            fontWeight: FontWeight.bold
+          ),
+          subtitle2: TextStyle(
+            color: Color(0xffced9df),
+            fontWeight: FontWeight.bold
+          )
+        ),
+        accentTextTheme: TextTheme(
+          button: TextStyle(
+            color: Color(0xffced9df)
+          )
+        ),
+        accentColor: Color(0xff1f2f22),
         colorScheme: ColorScheme(
+          
           primary: Color(0xff3e563e), 
           primaryVariant: Color(0xff091008),
           background: Colors.white, 

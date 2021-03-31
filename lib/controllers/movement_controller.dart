@@ -30,5 +30,19 @@ class MovementController{
     final movements = await movementMdl.getMovements(dateStart, dateEnd);
     return movements;
   }
+
+  Future<List<MovementFull>> getMovementsByFilter(
+        DateTime dateStart, DateTime dateEnd, 
+        List<int> categoriesId, List<bool> states) async{
+    final movements = await movementMdl.getMovementsByFilter(dateStart, dateEnd, categoriesId, states);
+    return movements;
+  }
+
+  Future<bool> edit(int id, String description, double value, bool active, 
+                      int categoryId, DateTime dateMovement ) async{
+
+    return await movementMdl.edit(id, description, value, active, categoryId, dateMovement);
+
+  }
   
 }
