@@ -24,12 +24,16 @@ class _ListMovementsState extends State<ListMovements> {
   @override
   void initState() {
     
-    _categoryId = Get.arguments[0];
+    
     _dateStart = Get.arguments[1];
     _dateEnd = Get.arguments[2];
-
-
+    _categoryId = Get.arguments[0];
     super.initState();
+    _getMovements();
+    
+  }
+
+  void _getMovements(){
     _movementCtrl.getMovementsByFilter(
       _dateStart, _dateEnd, [_categoryId], [true]
     ).then(( value ){
@@ -38,16 +42,30 @@ class _ListMovementsState extends State<ListMovements> {
       });
     });
   }
+
   @override
   Widget build(BuildContext context) {
+    
+    
+
     return Scaffold(
       appBar: AppBar(
         title: Text("Movimientos"),
         centerTitle: true,
       ),
-      body: ListView(
-        children: _movements.map(_movementListItem).toList(),
-      ),
+      body: FutureBuilder(
+        future: _movementCtrl.getMovementsByFilter(_dateStart, _dateEnd, [_categoryId], [true] ),
+        builder: ( context, snapshot){
+          if( !snapshot.hasData || snapshot.data == null || snapshot.data.length == 0 )
+            return Center(child:Text("NO HAY MOVIMIENTOS"));
+          
+          _movements = snapshot.data;
+
+          return ListView(
+            children: _movements.map((e) => _movementListItem(e)).toList(),
+          );
+        },
+      )
     );
   }
 
@@ -117,6 +135,8 @@ class _ListMovementsState extends State<ListMovements> {
   void _logicDelete( Movement m ){
     _movementCtrl.edit(m.id, m.description, m.value, false, m.categoryId, m.dateMovement);
     Get.back();
+    Future.delayed(Duration(milliseconds: 350), ()=>setState(() {}));
+    
   }
 
 

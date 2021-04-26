@@ -299,7 +299,10 @@ class _HomeViewState extends State<HomeView> {
               ),
             )
           ),
-          onTap: ()=>Get.toNamed("/MovementsChart", arguments: [ _totalInputs, _totalOutputs, _listCategories, _dateStart, _dateEnd]),
+          onTap: ()=>Get.toNamed(
+                      "/MovementsChart", 
+                      arguments: [_dateStart, _dateEnd]
+                    ).then((value) => setState((){})),
         )
       )
     );
@@ -334,7 +337,20 @@ class _HomeViewState extends State<HomeView> {
             )
           ],
         ),
-        trailing: Icon( e.category.type == 1? Icons.arrow_downward : Icons.arrow_upward, color: e.category.type==1? Colors.green:Colors.red,),
+        trailing: SizedBox(
+          width: 85,
+          child: Row(
+          
+            children: [
+              IconButton(onPressed: ()=>_confirmDeleteMovement(e.movement), icon: Icon(Icons.delete, color: Colors.white,)),
+              Icon( e.category.type == 1? Icons.arrow_downward : Icons.arrow_upward, color: e.category.type==1? Colors.green:Colors.red,)
+            ],
+          ),
+        ),
+        onTap: (){
+          Get.toNamed("/CreateEditMovement", arguments: [true, e.movement.id]);
+        },
+
       ) 
     ).toList());
 
@@ -368,6 +384,71 @@ class _HomeViewState extends State<HomeView> {
       });
     });
   }
+
+  void _confirmDeleteMovement( Movement m ){
+    Get.defaultDialog(
+      title: "Confirmar",
+      middleText: "Desear borrar este movimiento de la lista?",
+      confirm: Container(
+        height: 40,
+        width: 95,
+        padding: EdgeInsets.symmetric( vertical: 8, horizontal: 10 ),
+        child: TextButton(
+          style: ButtonStyle(
+            padding: MaterialStateProperty.all<EdgeInsets>(EdgeInsets.zero)
+          ),
+          onPressed: ()=>_logicDelete(m),
+          child: Text( "Eliminar", style: TextStyle(
+            color: Colors.white, 
+            fontSize: 16, fontWeight: FontWeight.bold), 
+            textAlign: TextAlign.center,
+          ),
+        ),
+        decoration: BoxDecoration(
+          
+          color: Colors.red,
+          borderRadius: BorderRadius.all(Radius.circular(5))
+        ),
+      ),
+      cancel: Container(
+        height: 40,
+        width: 90,
+        padding: EdgeInsets.symmetric( vertical: 8, horizontal: 10 ),
+        child: TextButton(
+            style: ButtonStyle(
+              padding: MaterialStateProperty.all<EdgeInsets>(EdgeInsets.zero)
+
+            ),
+              onPressed: ()=>Get.back(),
+            child: Text( "Cancelar", style: TextStyle(
+              color: Colors.red, 
+              fontSize: 16, 
+              fontWeight: FontWeight.bold,          
+            ),
+            textAlign: TextAlign.center, 
+          ),
+        ),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.all(Radius.circular(5)),
+          border: Border.all(color:Colors.red) 
+        ),
+      )
+
+    ).then((value){
+      setState(() {
+        
+      });
+    });
+  }
+
+  void _logicDelete( Movement m ){
+    movementsCtrl.edit(m.id, m.description, m.value, false, m.categoryId, m.dateMovement);
+    Get.back();
+    Future.delayed(Duration(milliseconds: 350), ()=>setState(() {}));
+    
+  }
+
 }
 
 
@@ -380,23 +461,22 @@ class MovementsChart extends StatefulWidget {
 
 class _MovementsChartState extends State<MovementsChart> {
 
-  double _totalInputs = 0;
-  double _totalOutputs = 0;
+
   DateTime _dteStart;
   DateTime _dteEnd;
+  double _totalInputs = 0;
+  double _totalOutputs = 0;
+  MovementController movementsCtrl = MovementController();
 
-  List<Map> _categories;
+  List<Map<String, dynamic>> _categories;
   final _moneyFmt = NumberFormat.simpleCurrency();
 
   @override
   void initState() {
     
     super.initState();
-    _totalInputs  = Get.arguments[0];
-    _totalOutputs = Get.arguments[1];
-    _categories   = Get.arguments[2];
-    _dteStart     = Get.arguments[3];
-    _dteEnd       = Get.arguments[4];
+    _dteStart     = Get.arguments[0];
+    _dteEnd       = Get.arguments[1];
 
 
 
@@ -412,14 +492,56 @@ class _MovementsChartState extends State<MovementsChart> {
     );
   }
 
-  ListView _getBody(){
-    return ListView(
-      children: [
-        _panel(),
-        Column(
-          children: _getCategories(),
-        ),
-      ],
+  _calcValues( List<MovementFull> mvs ){
+    List<int> categoriesExist = [];
+    _categories = [];
+    _totalOutputs = 0;
+    _totalInputs = 0;
+
+    for(MovementFull m in mvs){
+
+      
+
+      if( m.category.type == 1 ){
+        _totalInputs += m.movement.value;
+        
+      }
+
+      if( m.category.type == 0 ) {
+        _totalOutputs += m.movement.value;
+      }
+
+      if(!categoriesExist.contains(m.category.id)){
+        _categories.add({"id": m.category.id, "input": m.category.type == 1, "name": m.category.name, "value":m.movement.value});
+        categoriesExist.add(m.category.id);
+      }
+      else{
+        _categories[categoriesExist.indexOf(m.category.id)]["value"] += m.movement.value;
+      }
+    }
+    
+  }
+
+  Widget _getBody(){
+    return FutureBuilder(
+      future: movementsCtrl.getMovements(_dteStart, _dteEnd),
+      builder:( context, snapshot ) {
+
+        if( !snapshot.hasData )
+          return Center( child: CircularProgressIndicator() );
+
+        _calcValues( snapshot.data );
+
+
+        return ListView(
+          children: [
+            _panel(),
+            Column(
+              children: _getCategories(),
+            ),
+          ],
+        );
+      }
     );
     
     
@@ -482,7 +604,7 @@ class _MovementsChartState extends State<MovementsChart> {
                     child: ListTile(
                       dense: true,
                       title: Text( 
-                        _moneyFmt.format(_totalInputs),
+                        _moneyFmt.format(_totalOutputs),
                         style: TextStyle(
                           color: Color(0xff7993a0),
                           fontSize: 16

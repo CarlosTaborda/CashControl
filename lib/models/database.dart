@@ -9,7 +9,7 @@ class Categories extends Table{
   TextColumn get name => text().withLength(min: 0, max:50)();
   TextColumn get color => text().withLength(min: 0, max:15)();
   BoolColumn get active => boolean().withDefault(const Constant(true))();
-  IntColumn get type => integer()();
+  IntColumn get type => integer()();// 1->ingreso, 0->gasto
 
 }
 
@@ -37,21 +37,35 @@ class MovementFull{
 
 @UseMoor(tables:[Categories,Movements])
 class MyDatabase extends _$MyDatabase{
-  MyDatabase() : super(FlutterQueryExecutor.inDatabaseFolder(
+
+
+  MyDatabase._privateConstructor(): super(FlutterQueryExecutor.inDatabaseFolder(
             path: "db.sqlite", logStatements: true));
 
+  static final MyDatabase _instance = MyDatabase._privateConstructor();
 
+  factory MyDatabase() {
+    return _instance;
+  }
 
   Future<List<MovementFull>> getMovementsByDate( DateTime dateStart, DateTime dateEnd ) async {
+
     final query = await (
       select( movements )..where((mv)=>mv.dateMovement.isBetweenValues(dateStart, dateEnd) & mv.active.equals(true))
     ).join([
       innerJoin( categories, categories.id.equalsExp(movements.categoryId) & movements.dateMovement.isBetweenValues(dateStart, dateEnd) )
     ]).map((result) => MovementFull( result.readTable(categories), result.readTable(movements) )).get();
 
+    return query;
+  }
 
-
-
+  Future<List<MovementFull>> getMovementsDisabled() async {
+    
+    final query = await (
+      select( movements )..where((mv)=> mv.active.equals(false))
+    ).join([
+      innerJoin( categories, categories.id.equalsExp(movements.categoryId) )
+    ]).map((result) => MovementFull( result.readTable(categories), result.readTable(movements) )).get();
 
     return query;
   }

@@ -25,10 +25,16 @@ class MovementController{
   }
 
   Future<List<MovementFull>> getMovements(DateTime dateStart, DateTime dateEnd) async{
-    print(dateStart);
-    print(dateEnd);
+
 
     final movements = await movementMdl.getMovements(dateStart, dateEnd);
+    return movements;
+  }
+
+
+  Future<List<MovementFull>> getMovementsDisabled() async{
+
+    final movements = await movementMdl.getMovementsDisabled();
     return movements;
   }
 

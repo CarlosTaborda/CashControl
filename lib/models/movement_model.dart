@@ -23,6 +23,11 @@ class MovementModel{
     return movements;
   }
 
+  Future<List<MovementFull>> getMovementsDisabled() async {
+    final movements = await db.getMovementsDisabled();
+    return movements;
+  }
+
   Future<List<MovementFull>> getMovementsByFilter(DateTime dateStart, 
             DateTime dateEnd, List<int> categoriesId, List<bool> isActive) async {
               

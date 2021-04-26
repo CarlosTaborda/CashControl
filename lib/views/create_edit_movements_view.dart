@@ -124,7 +124,7 @@ class _CreateEditMovementState extends State<CreateEditMovement> with SingleTick
                   ]
                 ),
               ),
-              ElevatedButton(onPressed: ()=>createMovement(), child: Text("CREAR"))
+              ElevatedButton(onPressed: _edit? editMovement : createMovement, child: Text(_edit? "EDITAR":"CREAR"))
               
             ]
           );
@@ -138,6 +138,11 @@ class _CreateEditMovementState extends State<CreateEditMovement> with SingleTick
       print( "createMovement( ${_descriptionCtrl.text}, $_categoryId, ${_valueCtrl.text}, ${_dateMovement.toString()} )" );
       _movementCtrl.create(_descriptionCtrl.text, _categoryId, double.parse( _valueCtrl.text ), _dateMovement, true).then((value) => Get.back());
     });
+  }
+
+  void editMovement(){
+    print( "editMovement( ${_descriptionCtrl.text}, $_categoryId, ${_valueCtrl.text}, ${_dateMovement.toString()} )" );
+    _movementCtrl.edit(_movementId, _descriptionCtrl.text, double.parse( _valueCtrl.text ), true, _categoryId, _dateMovement).then((value) => Get.back());
   }
 
 
