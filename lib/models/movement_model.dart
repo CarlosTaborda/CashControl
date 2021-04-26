@@ -48,4 +48,10 @@ class MovementModel{
 
     return response>0;
   }
+
+
+  Future<Movement> getById( int id ) async{
+    final mv = await ( db.select(db.movements)..where((tbl) => tbl.id.equals(id))..limit(1) ).get();
+    return mv[0];
+  }
 }

@@ -3,6 +3,8 @@ import 'home_view.dart';
 import 'categories_view.dart';
 import 'trash_view.dart';
 import 'settings_view.dart';
+import '../views/list_movements_view.dart';
+import '../views/create_edit_movements_view.dart';
 
 
 

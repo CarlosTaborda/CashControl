@@ -1,6 +1,7 @@
 import '../models/database.dart';
 import '../models/movement_model.dart';
 import '../models/category_model.dart';
+import '../models/database.dart';
 
 class MovementController{
 
@@ -36,6 +37,12 @@ class MovementController{
         List<int> categoriesId, List<bool> states) async{
     final movements = await movementMdl.getMovementsByFilter(dateStart, dateEnd, categoriesId, states);
     return movements;
+  }
+
+
+  Future<Movement> getById( int id ) async {
+    final movement = await movementMdl.getById(id);
+    return movement;
   }
 
   Future<bool> edit(int id, String description, double value, bool active, 

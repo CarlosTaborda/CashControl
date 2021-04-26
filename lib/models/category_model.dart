@@ -32,7 +32,8 @@ class CategoryModel{
         ..where((tbl) => tbl.type.equals(type))
         ..where((tbl) => tbl.active.equals(state))
     ).get();
-    return categories;
+    
+    return categories is List? categories : [];
   }
 
   Future<Category> getById( int id ) async{
