@@ -25,14 +25,11 @@ class _CategoriesViewState extends State<CategoriesView> {
 
       length: 2, 
       child: Scaffold(
-        appBar: AppBar(
-          title: SizedBox(
-            child: Text(
-              "Categoría",
-            ),
-            height: 30,
-          ),
-          leading: Container(),
+        appBar: PreferredSize(
+          preferredSize: Size.fromHeight(105.0),
+          child:AppBar(
+          automaticallyImplyLeading: false,
+          title: Text("Categoría"),
           bottom: PreferredSize(
             preferredSize: Size(Get.width/2, 20),
             child: Align(
@@ -57,7 +54,7 @@ class _CategoriesViewState extends State<CategoriesView> {
               ),
             )
           ),
-        ),
+        )),
         bottomNavigationBar: MenuApp(),
         floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
         floatingActionButton: FloatingActionButton(
@@ -344,7 +341,7 @@ class _CreateEditCategoryState extends State<CreateEditCategory> {
               ,
               SizedBox(height: 30,),
               ElevatedButton(
-                onPressed: _edit? _editCategory : _insertCategory, 
+                onPressed: _color == ""? null: _edit? _editCategory : _insertCategory, 
                 child: Text(_edit?"EDITAR":"CREAR", style: TextStyle(color: Colors.white),),
                 style: ButtonStyle(
                   backgroundColor: MaterialStateProperty.all<Color>(Color(0xff3e563e))

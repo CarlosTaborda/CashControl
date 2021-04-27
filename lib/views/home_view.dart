@@ -43,6 +43,10 @@ class _HomeViewState extends State<HomeView> {
   Widget build(BuildContext context) {
     return Scaffold(
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+      appBar: AppBar(
+        title: Text("Balance"),
+        
+      ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           Get.toNamed("/CreateEditMovement", arguments: [false]).then((value){
@@ -51,6 +55,7 @@ class _HomeViewState extends State<HomeView> {
         },
         child: Icon( Icons.add ),
         backgroundColor: Color(0xff93a889),
+
       ),
       body: Container(
         child: _listMovements(),
@@ -157,19 +162,6 @@ class _HomeViewState extends State<HomeView> {
         {"name":"INGRESO", "value":(100-_percentOutput < 0 ? 0: 100 - _percentOutput), "color":Colors.green},
     ];
 
-    element.add(
-      Padding(
-        padding: EdgeInsets.symmetric(vertical: 15,horizontal: 10), 
-        child: Center(
-          child: Text("Balance", style: 
-            TextStyle(
-              color: Color(0xffced9df),
-              fontSize: 30,
-            )
-          )
-        )
-      )
-    );
 
 
 
@@ -549,7 +541,7 @@ class _MovementsChartState extends State<MovementsChart> {
 
   Container _panel(){
     return Container(
-      height: Get.height * 0.30,
+      height: 215,
       padding: EdgeInsets.all(15),
       child: Card(
         color: Color(0xff3e563e),

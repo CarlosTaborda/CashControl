@@ -30,7 +30,6 @@ class _CreateEditMovementState extends State<CreateEditMovement> with SingleTick
 
   @override
   void initState() {
-    super.initState();
 
     _edit       = false;
     _movementId = 0;
@@ -124,7 +123,10 @@ class _CreateEditMovementState extends State<CreateEditMovement> with SingleTick
                   ]
                 ),
               ),
-              ElevatedButton(onPressed: _edit? editMovement : createMovement, child: Text(_edit? "EDITAR":"CREAR"))
+              ElevatedButton(
+                onPressed: (_categoryId==null? (){}:(_edit ? editMovement : createMovement)), 
+                child: Text(_edit? "EDITAR":"CREAR")
+              )
               
             ]
           );
@@ -178,7 +180,8 @@ class _CreateEditMovementState extends State<CreateEditMovement> with SingleTick
           );
         }
 
-        return Center( child: Text("NO HAY CATEGORIAS", style: TextStyle(color:Colors.white, fontWeight: FontWeight.bold)));
+
+        return ListView( children: [Text("NO HAY CATEGORIAS", style: TextStyle(color:Colors.white, fontWeight: FontWeight.bold), textAlign: TextAlign.center,)]);
       }
     );
   }

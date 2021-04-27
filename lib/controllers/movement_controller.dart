@@ -1,7 +1,6 @@
 import '../models/database.dart';
 import '../models/movement_model.dart';
 import '../models/category_model.dart';
-import '../models/database.dart';
 
 class MovementController{
 
@@ -57,5 +56,15 @@ class MovementController{
     return await movementMdl.edit(id, description, value, active, categoryId, dateMovement);
 
   }
+
+
+  Future<bool> delete(int id ) async{
+
+    return await movementMdl.delete(id);
+
+  }
+
+
+
   
 }
