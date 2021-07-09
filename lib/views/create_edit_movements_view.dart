@@ -220,7 +220,7 @@ class _CreateEditMovementState extends State<CreateEditMovement> with SingleTick
     return ElevatedButton(
       onPressed: ()=>_showDatePicker(), 
       child: Text(
-        DateTime.now().toString().substring(0,10)
+        _dateMovement.toString().substring(0,10)
       ),
       style: ButtonStyle(
         backgroundColor: MaterialStateProperty.all<Color>(Colors.green[900])
