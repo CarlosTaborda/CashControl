@@ -1,8 +1,9 @@
+import 'package:get/get.dart';
 import '../models/database.dart';
 import '../models/movement_model.dart';
 import '../models/category_model.dart';
 
-class MovementController{
+class MovementController extends GetxController{
 
   final movementMdl = MovementModel();
   final categoryMdl = CategoryModel();
