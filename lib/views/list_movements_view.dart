@@ -113,7 +113,7 @@ class _ListMovementsState extends State<ListMovements> {
                 size: 30,
               ), 
               onPressed: (){
-                Get.toNamed("/CreateEditMovement", arguments: [ true, m.movement.id ]);
+                Get.toNamed("/CreateEditMovement", arguments: [ true, m.movement.id ]).then((value) => setState((){}));
               }
             ),
             IconButton(

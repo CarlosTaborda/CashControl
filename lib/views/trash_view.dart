@@ -99,7 +99,13 @@ class _TrashViewState extends State<TrashView> {
           style: ButtonStyle(
             padding: MaterialStateProperty.all<EdgeInsets>(EdgeInsets.zero)
           ),
-          onPressed: ()=>_mvtsCtrl.delete(movementId),
+          onPressed: (){
+            _mvtsCtrl.delete(movementId);
+            Get.back();
+            Future.delayed(Duration(milliseconds: 300), (){
+              setState(() {});
+            });
+          },
           child: Text( "Eliminar", style: TextStyle(
             color: Colors.white, 
             fontSize: 16, fontWeight: FontWeight.bold), 
@@ -157,7 +163,13 @@ class _TrashViewState extends State<TrashView> {
           style: ButtonStyle(
             padding: MaterialStateProperty.all<EdgeInsets>(EdgeInsets.zero)
           ),
-          onPressed: ()=>_mvtsCtrl.edit(m.id, m.description, m.value, true, m.categoryId, m.dateMovement),
+          onPressed: (){
+            _mvtsCtrl.edit(m.id, m.description, m.value, true, m.categoryId, m.dateMovement);
+            Get.back();
+            Future.delayed(Duration(milliseconds: 300), (){
+              setState(() {});
+            });
+          },
           child: Text( "Restaurar", style: TextStyle(
             color: Colors.white, 
             fontSize: 16, fontWeight: FontWeight.bold), 

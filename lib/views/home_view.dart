@@ -340,7 +340,7 @@ class _HomeViewState extends State<HomeView> {
           ),
         ),
         onTap: (){
-          Get.toNamed("/CreateEditMovement", arguments: [true, e.movement.id]);
+          Get.toNamed("/CreateEditMovement", arguments: [true, e.movement.id]).then((value) => setState((){}));
         },
 
       ) 
@@ -699,7 +699,7 @@ class _MovementsChartState extends State<MovementsChart> {
       child: Card(
         color: Color(0xff1f2f22),
         child: GestureDetector(
-          onTap: ()=>Get.toNamed("/ListMovements",arguments: [ cat["id"], _dteStart, _dteEnd ]),
+          onTap: ()=>Get.toNamed("/ListMovements",arguments: [ cat["id"], _dteStart, _dteEnd ]).then((value) => setState((){})),
           child: Column(
             children: [
               SizedBox(height: 10,),
